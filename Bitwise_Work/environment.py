@@ -8,30 +8,25 @@ class PbRLWrapper(gym.Wrapper):
         self.trajectory_buffer = trajectory_buffer
 
     def step(self, action):
-        # 1. Run the real environment step
-        # The 'real_reward' here is the +1 for survival (we ignore it)
+        # Run the real environment step (ignore the reward)
         obs, real_reward, terminated, truncated, info = self.env.step(action)
 
-        # 2. Store the observation in our buffer 
-        # (So the Critic can look at it later)
+        # Store the observation in our buffer 
         self.trajectory_buffer.add_step(obs)
 
-        # 3. THE HIJACK
-        # Instead of returning 'real_reward', we ask our Brain
+        # Hijack here, we ask our reward model to predict the reward
         fake_reward = self.reward_network.predict_reward(obs)
 
-        # 4. Return the FAKE reward to the Agent
-        # The agent now learns whatever the Network tells it to learn.
+        # Return the fake reward to the agent
         return obs, fake_reward, terminated, truncated, info
 
     def reset(self, **kwargs):
-        # When an episode ends, we tell the buffer: 
-        # "Wrap up the previous episode, get ready for a new one."
+        # When episode ends
         self.trajectory_buffer.commit_trajectory()
 
         obs, info = self.env.reset(**kwargs)
         
-        # Don't forget to store the very first frame of the new game!
+        # Store the very first frame of the new game
         self.trajectory_buffer.add_step(obs)
         
         return obs, info
