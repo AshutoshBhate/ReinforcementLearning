@@ -1,6 +1,5 @@
 import gymnasium as gym
 import numpy as np
-import torch
 import config
 
 class CliffWalkingStateWrapper(gym.ObservationWrapper):
@@ -25,25 +24,21 @@ class RewardPredictorWrapper(gym.Wrapper):
         self.reward_model = reward_model
         self._current_obs = None
 
+    def step(self, action):
+        if not hasattr(self, '_current_obs') or self._current_obs is None:
+            self._current_obs, _ = self.env.reset()
+
+        current_obs = self._current_obs
+        next_obs, env_reward, terminated, truncated, info = self.env.step(action)
+        info['original_reward'] = env_reward
+
+        rf_reward = self.reward_model.predict(current_obs, action)
+        final_reward = (rf_reward * 2.0) - 2.1
+
+        self._current_obs = next_obs
+        return next_obs, final_reward, terminated, truncated, info
+
     def reset(self, **kwargs):
         obs, info = self.env.reset(**kwargs)
         self._current_obs = obs
         return obs, info
-
-    def step(self, action):
-        rm_obs = self._current_obs
-        next_obs, env_reward, terminated, truncated, info = self.env.step(action)
-        self._current_obs = next_obs
-        info['original_reward'] = env_reward
-
-        with torch.no_grad():
-            state_tensor = torch.tensor(rm_obs, dtype=torch.float32, device=config.DEVICE).unsqueeze(0)
-            action_one_hot = torch.zeros((1, config.ACTION_DIM), device=config.DEVICE)
-            action_one_hot[0, action] = 1.0
-            rm_input = torch.cat([state_tensor, action_one_hot], dim=1)
-            raw_reward = self.reward_model(rm_input).item()
-
-        sigmoid_reward = 1 / (1 + np.exp(-raw_reward))
-        final_reward = sigmoid_reward - 0.5
-
-        return next_obs, final_reward, terminated, truncated, info
