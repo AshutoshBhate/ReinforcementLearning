@@ -33,26 +33,26 @@ class RewardPredictorWrapper(gym.Wrapper):
 
     def step(self, action):
         rm_obs = self._current_obs
-        
         next_obs, env_reward, terminated, truncated, info = self.env.step(action)
-        
         self._current_obs = next_obs
-
         info['original_reward'] = env_reward
 
         with torch.no_grad():
-            state_tensor = torch.tensor(
-                rm_obs, dtype=torch.float32, device=config.DEVICE
-            ).unsqueeze(0)
-
-            action_one_hot = torch.zeros(
-                (1, config.ACTION_DIM), device=config.DEVICE
-            )
+            state_tensor = torch.tensor(rm_obs, dtype=torch.float32, device=config.DEVICE).unsqueeze(0)
+            action_one_hot = torch.zeros((1, config.ACTION_DIM), device=config.DEVICE)
             action_one_hot[0, action] = 1.0
-
             rm_input = torch.cat([state_tensor, action_one_hot], dim=1)
             
-            pred_reward = self.reward_model(rm_input).item() - 0.05
-            
-        return next_obs, pred_reward, terminated, truncated, info
+            # Get raw reward from network
+            raw_reward = self.reward_model(rm_input).item()
+
+        # SAFE SCALING
+        # 1. Sigmoid to squash output between (0, 1)
+        # 2. Shift by -0.5 to make it (-0.5, 0.5)
+        # 3. This ensures "bad" steps are negative and "good" steps are positive/neutral
+        # This is much more stable than running normalization for CliffWalking.
+        sigmoid_reward = 1 / (1 + np.exp(-raw_reward))
+        final_reward = sigmoid_reward - 0.5
+
+        return next_obs, final_reward, terminated, truncated, info
 

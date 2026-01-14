@@ -10,6 +10,10 @@ def train_reward_model(reward_model, pairs, teacher, optimizer):
     
     criterion = nn.BCEWithLogitsLoss()
     
+    batch_loss = 0
+    
+    optimizer.zero_grad()
+    
     for segment_1, segment_2 in pairs:
         label = teacher.get_preference(segment_1, segment_2)
         
@@ -45,7 +49,7 @@ def train_reward_model(reward_model, pairs, teacher, optimizer):
         
         s2_input = torch.cat([s2_obs, s2_act_one_hot], dim=1)
 
-        optimizer.zero_grad()
+        
 
         r1_sum = torch.sum(reward_model(s1_input))
         r2_sum = torch.sum(reward_model(s2_input))
@@ -53,9 +57,13 @@ def train_reward_model(reward_model, pairs, teacher, optimizer):
         logit = r2_sum - r1_sum
         loss = criterion(logit.unsqueeze(0), label_tensor)
         
-        loss.backward()
-        optimizer.step()
-        
+        batch_loss += loss
         loss_list.append(loss.item())
-
-    return np.mean(loss_list)
+        
+    if len(pairs) > 0:
+        batch_loss = batch_loss / len(pairs)
+        batch_loss.backward()
+        optimizer.step()
+        return np.mean(loss_list)
+    else:
+        return 0.0
