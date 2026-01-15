@@ -41,9 +41,11 @@ class RewardPredictorWrapper(gym.Wrapper):
             action_one_hot = torch.zeros((1, config.ACTION_DIM), device=config.DEVICE)
             action_one_hot[0, action] = 1.0
             rm_input = torch.cat([state_tensor, action_one_hot], dim=1)
-            raw_reward = self.reward_model(rm_input).item()
+            
+            raw_logit = self.reward_model(rm_input).item()
 
-        sigmoid_reward = 1 / (1 + np.exp(-raw_reward))
-        final_reward = sigmoid_reward - 0.5
+        prob_good = 1 / (1 + np.exp(-raw_logit))
+
+        final_reward = prob_good - 0.55
 
         return next_obs, final_reward, terminated, truncated, info
