@@ -9,11 +9,10 @@ class TrajectoryBuffer:
         self.segments = deque(maxlen=capacity)
         self.current_segment = []
 
-    def add_step(self, obs, action, original_reward):
+    def add_step(self, obs, action):
         self.current_segment.append({
             'obs': obs,
-            'action': action,
-            'original_reward': original_reward
+            'action': action
         })
 
         if len(self.current_segment) >= self.segment_length:

@@ -1,0 +1,24 @@
+﻿Date	Time	Severity	PID	TID	Function	Message
+22-01-2026	11:56:55.696	 INFO	 25212	 27044	DllMain	"DLL_PROCESS_ATTACH Sun Apr 27 14:47:17 2025 11.4.2500.28"
+22-01-2026	11:56:55.699	 INFO	 25212	 27044	DllMain	"PROCESS ATTACHED"
+22-01-2026	11:56:55.700	 INFO	 25212	 34324	LateInitialization	"Intialization..."
+22-01-2026	11:56:55.701	 INFO	 25212	 34324	LoadDisplayDevicesName	"DisplayDevices : "
+22-01-2026	11:56:55.701	 INFO	 25212	 34324	LoadDisplayDevicesName	"\\.\DISPLAY1"
+22-01-2026	11:56:55.702	 INFO	 25212	 34324	LoadDisplayDevicesName	"\\.\DISPLAY2"
+22-01-2026	11:56:55.703	 INFO	 25212	 34324	LoadDisplayDevicesName	"\\.\DISPLAY3"
+22-01-2026	11:56:55.704	 INFO	 25212	 34324	LoadDisplayDevicesName	"\\.\DISPLAY4"
+22-01-2026	11:56:58.710	ERROR	 25212	 34324	LateInitialization	"std::exception caught = GetFileVersionInfoSizeW failed with 1813
+"
+22-01-2026	11:56:58.711	 INFO	 25212	 34324	LateInitialization	"Exe = C:\Users\ashutoshb\AppData\Local\Programs\Git\usr\bin\bash.exe
+ProductName = 
+FileDescription = 
+ShadowFolder = %LOCALAPPDATA%\EndpointDLP\print-shadow
+ParsingMode = Hybrid
+DeletePrinterShadowFiles = 1
+PrinterUseDisplayDevicesList = 0
+EnablePrinterEscapeProcessing = 1
+EnableWatermarkForAll = 0
+MaxPrintPages = 4294967295
+GdiPlusToken = 88573140
+ExcludedEscapes = 4117, 37, 4118, 4115, 4121, "
+22-01-2026	11:56:58.712	 INFO	 25212	 34324	LateInitialization	"Intialization finished"
