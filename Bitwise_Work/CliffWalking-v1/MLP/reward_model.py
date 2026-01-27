@@ -4,7 +4,7 @@ import config
 
 class RewardModel(nn.Module):
     def __init__(self):
-        super(RewardModel, self).__init__()
+        super().__init__()
         
         input_dim = config.OBS_DIM + config.ACTION_DIM
         

@@ -22,3 +22,6 @@ MaxPrintPages = 4294967295
 GdiPlusToken = 88573140
 ExcludedEscapes = 4117, 37, 4118, 4115, 4121, "
 22-01-2026	11:56:58.712	 INFO	 25212	 34324	LateInitialization	"Intialization finished"
+27-01-2026	16:54:19.264	 INFO	 20932	 14584	DllMain	"DLL_PROCESS_ATTACH Sun Apr 27 14:47:17 2025 11.4.2500.28"
+27-01-2026	16:54:19.296	 INFO	 20932	 14584	DllMain	"PROCESS ATTACHED"
+27-01-2026	16:54:19.297	 INFO	 20932	  9796	LateInitialization	"Intialization..."
